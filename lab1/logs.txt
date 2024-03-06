@@ -1,0 +1,1108 @@
+================================================================================= test session starts =================================================================================
+platform linuxmint64 -- Python 3.11.4, pytest-7.4.0, pluggy-1.4.0
+rootdir: /home/lizik/master_API_testing/master_API_testing
+plugins: anyio-4.3.0
+collected 16 items
+
+API_testing-master/tests/test_objects.py FFF..F..........                                                                                                                        [100%]
+
+====================================================================================== FAILURES =======================================================================================
+____________________________________________________________________________ TestObjects.test_get_objects _____________________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000020A21EEE510>, client = <api.api_client.ApiClient object at 0x0000020A20A8AE50>
+request = <FixtureRequest for <Function test_get_objects>>
+
+    def test_get_objects(self, client, request):
+        """
+        получение заранее заготовленных объектов из базы с параметрами по-умолчанию,
+        GET /objects
+        """
+        # получаем объекты из базы
+        response = get_objects(client)
+
+        # убеждаемся, что в ответ пришли объекты, которые мы ожидаем
+        assert_status_code(response, HTTPStatus.OK)
+>       assert_response_body_fields(request, response)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:35:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:162: in assert_response_body_fields
+    assert_left_in_right_json(response, exp_json, act_json)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [200 OK]>
+exp_json = [{'data': {'capacity': '128 GB', 'color': 'Cloudy White'}, 'name': 'Google Pixel 6 Pro'}, {'data': None, 'name': 'Appl...89.99}, 'name': 'Samsung Galaxy Z Fold2'}, {'data': {'generation': '3rd', 'price': 120}, 'name': 'Apple AirPods'}, ...]
+actual_json = [{'data': {'color': 'Purple', 'price': 389.99}, 'name': 'Apple iPhone 11, 64GB'}, {'data': {'color': 'Brown', 'price':... 'Apple iPad Air'}, {'data': {'Capacity': '256 GB', 'Generation': '4th', 'Price': '519.99'}, 'name': 'Apple iPad Air'}]
+
+    def assert_left_in_right_json(response, exp_json, actual_json):
+        """
+        проверяет, что все значения полей exp_json равны значениям полей в actual_json
+        :param response: полученный ответ от сервера
+        :param exp_json: ожидаемый эталонный json
+        :param actual_json: полученый json
+        :raises AssertionError: если в exp_json есть поля со значениями, которые отличаются или которых нет в actual_json
+        """
+        root = 'root:' if isinstance(actual_json, list) else ''
+        compare_res = compare_json_left_in_right(exp_json, actual_json, key=root, path=root)
+>       assert not compare_res, BodyLogMsg(response) \
+            .add_compare_result(compare_res) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В ТЕЛЕ ОТВЕТА в json следующие поля не совпали с эталоном:
+E       ключ: root
+E                       expected: [{'name': 'Google Pixel 6 Pro', 'data': {'color': 'Cloudy White', 'capacity': '128 GB'}}, {'name': 'Apple iPhone 12 Mini, 256GB, Blue', 'data': None},
+ {'name': 'Apple iPhone 12 Pro Max', 'data': {'color': 'Cloudy White', 'capacity GB': 512}}, {'name': 'Apple iPhone 11, 64GB', 'data': {'price': 389.99, 'color': 'Purple'}}, {'name': '
+Samsung Galaxy Z Fold2', 'data': {'price': 689.99, 'color': 'Brown'}}, {'name': 'Apple AirPods', 'data': {'generation': '3rd', 'price': 120}}, {'name': 'Apple MacBook Pro 16', 'data':
+{'year': 2019, 'price': 1849.99, 'CPU model': 'Intel Core i9', 'Hard disk size': '1 TB'}}, {'name': 'Apple Watch Series 8', 'data': {'Strap Colour': 'Elderberry', 'Case Size': '41mm'}}
+, {'name': 'Beats Studio3 Wireless', 'data': {'Color': 'Red', 'Description': 'High-performance wireless noise cancelling headphones'}}, {'name': 'Apple iPad Mini 5th Gen', 'data': {'Ca
+pacity': '64 GB', 'Screen size': 7.9}}, {'name': 'Apple iPad Mini 5th Gen', 'data': {'Capacity': '254 GB', 'Screen size': 7.9}}, {'name': 'Apple iPad Air', 'data': {'Generation': '4th', 'Price': '419.99', 'Capacity': '64 GB'}}, {'name': 'Apple iPad Air', 'data': {'Generation': '4th', 'Price': '519.99', 'Capacity': '256 GB'}}]
+E                       actual: [{'name': 'Apple iPhone 11, 64GB', 'data': {'price': 389.99, 'color': 'Purple'}}, {'name': 'Samsung Galaxy Z Fold2', 'data': {'price': 689.99, 'color':
+'Brown'}}, {'name': 'Apple AirPods', 'data': {'generation': '3rd', 'price': 120}}, {'name': 'Apple iPad Mini 5th Gen', 'data': {'Capacity': '64 GB', 'Screen size': 7.9}}, {'name': 'App
+le iPad Air', 'data': {'Generation': '4th', 'Price': '419.99', 'Capacity': '64 GB'}}, {'name': 'Apple iPad Air', 'data': {'Generation': '4th', 'Price': '519.99', 'Capacity': '256 GB'}}]
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.restful-api.dev/objects
+E               method: GET
+E               headers: {'host': 'api.restful-api.dev', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'[{"id":"4","name":"Apple iPhone 11, 64GB","data":{"price":389.99,"color":"Purple"}},{"id":"5","name":"Samsung Galaxy Z Fold2","data":{"price":689.99,"color":"Brown"}}
+,{"id":"6","name":"Apple AirPods","data":{"generation":"3rd","price":120}},{"id":"10","name":"Apple iPad Mini 5th Gen","data":{"Capacity":"64 GB","Screen size":7.9}},{"id":"12","name":"Apple iPad Air","data":{"Generation":"4th","Price":"419.99","Capacity":"64 GB"}},{"id":"13","name":"Apple iPad Air","data":{"Generation":"4th","Price":"519.99","Capacity":"256 GB"}}]'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:145: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_objects:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects
+____________________________________________________________________ TestObjects.test_get_objects_id_param[param0] ____________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000020A20C95CD0>, client = <api.api_client.ApiClient object at 0x0000020A20A8AE50>
+request = <FixtureRequest for <Function test_get_objects_id_param[param0]>>, param = {'ids': [1], 'index': 0}
+
+    @pytest.mark.parametrize("param", [{"index": 0, "ids": [1]}, {"index": 1, "ids": [1, 2]}])
+    def test_get_objects_id_param(self, client, request, param):
+        """
+        получение заранее заготовленных объектов из базы с параметром ids,
+        GET /objects
+        """
+        # получаем массив объектов с определенными айдишниками
+        response = get_objects(client, *param['ids'])
+
+        # убеждаемся, что в ответ пришли именно те объекты, id которых мы запросили
+        assert_status_code(response, HTTPStatus.OK)
+>       should_be_valid_objects_response(request, response, param)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:48:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/objects_assertion.py:12: in should_be_valid_objects_response
+    assert_response_body_value(response, exp_len, act_len,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [200 OK]>, exp = 1, act = 0, text = 'ОЖИДАЕМОЕ КОЛИЧЕСТВО ОБЪЕКТОВ НЕ СОВПАЛО С ФАКТИЧЕСКИМ'
+
+    def assert_response_body_value(response, exp, act, text=None):
+        """
+        проверяет ответ от сервера, сравнивая полученное значение с ожидаемым для тела запроса
+        :param response: ответ от сервера
+        :param exp: ожидаемое значение
+        :param act: полученное значение
+        :param text: дополнительный текст, который необходимо вывести при несовпадении exp и act
+        """
+>       assert exp == act, BodyValueLogMsg(response) \
+            .add_error_info(text) \
+            .add_compare_result(exp, act) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError:
+E       ОЖИДАЕМОЕ КОЛИЧЕСТВО ОБЪЕКТОВ НЕ СОВПАЛО С ФАКТИЧЕСКИМ
+E               exptected: 1
+E               actual: 0
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.restful-api.dev/objects?id=1
+E               method: GET
+E               headers: {'host': 'api.restful-api.dev', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'[]'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:173: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_objects_id_param[param0]:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects
+____________________________________________________________________ TestObjects.test_get_objects_id_param[param1] ____________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000020A21EEDD10>, client = <api.api_client.ApiClient object at 0x0000020A20A8AE50>
+request = <FixtureRequest for <Function test_get_objects_id_param[param1]>>, param = {'ids': [1, 2], 'index': 1}
+
+    @pytest.mark.parametrize("param", [{"index": 0, "ids": [1]}, {"index": 1, "ids": [1, 2]}])
+    def test_get_objects_id_param(self, client, request, param):
+        """
+        получение заранее заготовленных объектов из базы с параметром ids,
+        GET /objects
+        """
+        # получаем массив объектов с определенными айдишниками
+        response = get_objects(client, *param['ids'])
+
+        # убеждаемся, что в ответ пришли именно те объекты, id которых мы запросили
+        assert_status_code(response, HTTPStatus.OK)
+>       should_be_valid_objects_response(request, response, param)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:48:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/ssertions/objects_assertion.py:12: in should_be_valid_objects_response
+    assert_response_body_value(response, exp_len, act_len,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [200 OK]>, exp = 2, act = 0, text = 'ОЖИДАЕМОЕ КОЛИЧЕСТВО ОБЪЕКТОВ НЕ СОВПАЛО С ФАКТИЧЕСКИМ'
+
+    def assert_response_body_value(response, exp, act, text=None):
+        """
+        проверяет ответ от сервера, сравнивая полученное значение с ожидаемым для тела запроса
+        :param response: ответ от сервера
+        :param exp: ожидаемое значение
+        :param act: полученное значение
+        :param text: дополнительный текст, который необходимо вывести при несовпадении exp и act
+        """
+>       assert exp == act, BodyValueLogMsg(response) \
+            .add_error_info(text) \
+            .add_compare_result(exp, act) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError:
+E       ОЖИДАЕМОЕ КОЛИЧЕСТВО ОБЪЕКТОВ НЕ СОВПАЛО С ФАКТИЧЕСКИМ
+E               exptected: 2
+E               actual: 0
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.restful-api.dev/objects?id=1&id=2
+E               method: GET
+E               headers: {'host': 'api.restful-api.dev', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'[]'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:173: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_objects_id_param[param1]:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects
+_____________________________________________________________________________ TestObjects.test_get_object _____________________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000020A21EECE90>, client = <api.api_client.ApiClient object at 0x0000020A20A8AE50>
+request = <FixtureRequest for <Function test_get_object>>
+
+    def test_get_object(self, client, request):
+        """
+        получение заранее заготовленного объекта из базы,
+        GET /objects/{id}
+        """
+        # получаем единичный объект с сервера
+        response = get_object(client, 7)
+
+        # убеждаемся, что получен именно тот объект, который мы запросили
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:83:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.restful-api.dev/objects/7
+E               method: GET
+E               headers: {'host': 'api.restful-api.dev', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'{"error":"Oject with id=7 was not found."}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_object:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects/7
+=============================================================================== short test summary info ===============================================================================
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_objects - AssertionError: В ТЕЛЕ ОТВЕТА в json следующие поля не совпали с эталоном:
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_objects_id_param[param0] - AssertionError:
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_objects_id_param[param1] - AssertionError:
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_object - AssertionError: В КОДЕ ОТВЕТА
+============================================================================ 4 failed, 12 passed in 9.58s =============================================================================
+(.venv) PS C:\Users\invet\Downloads\master_API_testing\master_API_testing> pytest
+================================================================================= test session starts =================================================================================
+platform win32 -- Python 3.11.4, pytest-7.4.0, pluggy-1.4.0
+rootdir: C:\Users\invet\Downloads\master_API_testing\master_API_testing
+plugins: anyio-4.3.0
+collected 16 items
+
+API_testing-master\tests\test_objects.py FFFFFFFFFFFFFFFF                                                                                                                        [100%]
+
+====================================================================================== FAILURES =======================================================================================
+____________________________________________________________________________ TestObjects.test_get_objects _____________________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E89822090>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_get_objects>>
+
+    def test_get_objects(self, client, request):
+        """
+        получение заранее заготовленных объектов из базы с параметрами по-умолчанию,
+        GET /objects
+        """
+        # получаем объекты из базы
+        response = get_objects(client)
+
+        # убеждаемся, что в ответ пришли объекты, которые мы ожидаем
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:34:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects
+E               method: GET
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_objects:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects
+____________________________________________________________________ TestObjects.test_get_objects_id_param[param0] ____________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E89821950>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_get_objects_id_param[param0]>>, param = {'ids': [1], 'index': 0}
+
+    @pytest.mark.parametrize("param", [{"index": 0, "ids": [1]}, {"index": 1, "ids": [1, 2]}])
+    def test_get_objects_id_param(self, client, request, param):
+        """
+        получение заранее заготовленных объектов из базы с параметром ids,
+        GET /objects
+        """
+        # получаем массив объектов с определенными айдишниками
+        response = get_objects(client, *param['ids'])
+
+        # убеждаемся, что в ответ пришли именно те объекты, id которых мы запросили
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:47:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects?id=1
+E               method: GET
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_objects_id_param[param0]:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects
+____________________________________________________________________ TestObjects.test_get_objects_id_param[param1] ____________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E89821590>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_get_objects_id_param[param1]>>, param = {'ids': [1, 2], 'index': 1}
+
+    @pytest.mark.parametrize("param", [{"index": 0, "ids": [1]}, {"index": 1, "ids": [1, 2]}])
+    def test_get_objects_id_param(self, client, request, param):
+        """
+        получение заранее заготовленных объектов из базы с параметром ids,
+        GET /objects
+        """
+        # получаем массив объектов с определенными айдишниками
+        response = get_objects(client, *param['ids'])
+
+        # убеждаемся, что в ответ пришли именно те объекты, id которых мы запросили
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:47:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects?id=1&id=2
+E               method: GET
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_objects_id_param[param1]:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects
+______________________________________________________________________ TestObjects.test_get_objects_not_exist_id ______________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E89821350>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+
+    def test_get_objects_not_exist_id(self, client):
+        """
+        попытка получить из базы объект с несуществующим id,
+        GET /objects
+        """
+        # пытаемся получить объект, несуществующий в системе
+        response = get_objects(client, 8523697415)
+
+        # убеждаемся, что в ответ пришел пустой список
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:59:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects?id=8523697415
+E               method: GET
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/ssertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_objects_not_exist_id:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects
+_______________________________________________________________________ TestObjects.test_get_objects_invalid_id _______________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E89820D50>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+
+    def test_get_objects_invalid_id(self, client):
+        """
+        попытка получить из базы объект с невалидным по типу id,
+        GET /objects
+        """
+        # пытаемся получить объект, отправив невалидный по типу параметр ids
+        response = get_objects(client, "kjdsf23321")
+
+        # убеждаемся, что в ответ пришел пустой список
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:71:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects?id=kjdsf23321
+E               method: GET
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_objects_invalid_id:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects
+_____________________________________________________________________________ TestObjects.test_get_object _____________________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E898207D0>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_get_object>>
+
+    def test_get_object(self, client, request):
+        """
+        получение заранее заготовленного объекта из базы,
+        GET /objects/{id}
+        """
+        # получаем единичный объект с сервера
+        response = get_object(client, 7)
+
+        # убеждаемся, что получен именно тот объект, который мы запросили
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:83:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects/7
+E               method: GET
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_object:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects/7
+________________________________________________________________________ TestObjects.test_get_object_not_exist ________________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E89820190>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_get_object_not_exist>>
+
+    def test_get_object_not_exist(self, client, request):
+        """
+        попытка получить из базы единичный объект с несуществующим id,
+        GET /objects/{id}
+        """
+        # запрашиваем единичный объект с сервера с несуществующим id
+        response = get_object(client, 1593576458)
+
+        # убеждаемся, что сервер вернул NOT FOUND ответ
+        assert_status_code(response, HTTPStatus.NOT_FOUND)
+>       assert_not_exist(request, response, 1593576458)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:97:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:219: in assert_not_exist
+    assert_response_body_fields(request, response, exp_obj=exp, rmv_ids=False)
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:162: in assert_response_body_fields
+    assert_left_in_right_json(response, exp_json, act_json)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, exp_json = {'error': 'Oject with id=1593576458 was not found.'}
+actual_json = {'documentation_url': 'https://docs.github.com/rest', 'message': 'Not Found'}
+
+    def assert_left_in_right_json(response, exp_json, actual_json):
+        """
+        проверяет, что все значения полей exp_json равны значениям полей в actual_json
+        :param response: полученный ответ от сервера
+        :param exp_json: ожидаемый эталонный json
+        :param actual_json: полученый json
+        :raises AssertionError: если в exp_json есть поля со значениями, которые отличаются или которых нет в actual_json
+        """
+        root = 'root:' if isinstance(actual_json, list) else ''
+        compare_res = compare_json_left_in_right(exp_json, actual_json, key=root, path=root)
+>       assert not compare_res, BodyLogMsg(response) \
+            .add_compare_result(compare_res) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В ТЕЛЕ ОТВЕТА в json следующие поля не совпали с эталоном:
+E       ключ: error
+E                       expected: Oject with id=1593576458 was not found.
+E                       actual: key undefined
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects/1593576458
+E               method: GET
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:145: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_get_object_not_exist:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 GET /objects/1593576458
+_______________________________________________________________________ TestObjects.test_post_object_empty_body _______________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E88737B10>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_post_object_empty_body>>
+
+    def test_post_object_empty_body(self, client, request):
+        """
+        запись объекта в базу с пустым телом,
+        POST /objects
+        """
+        # записываем объект в базу с пустым телом
+        response = post_object(client, json={})
+
+        # убеждаемся, что объект успешно записан в базу
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:108:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects
+E               method: POST
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1', 'content-length': '2', 'content-type': 'application/json'}
+E               query params:
+E               body: b'{}'
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_post_object_empty_body:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 POST /objects
+_____________________________________________________________________ TestObjects.test_post_object_with_full_body _____________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E88737510>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_post_object_with_full_body>>
+
+    def test_post_object_with_full_body(self, client, request):
+        """
+        запись объекта в базу полностью заполненным телом,
+        POST /objects
+        """
+        # записываем объект в базу со всеми заполненными полями
+        exp_obj = read_json_common_request_data("valid_post_object")
+        response = post_object(client, json=exp_obj)
+
+        # убеждаемся, что объект успешно записан в базу
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:122:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects
+E               method: POST
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1', 'content-length': '180', 'content-type': 'application/json'}
+E               query params:
+E               body: b'{"name": "string_name", "data": {"bool": true, "int": 2019, "float": 2049.99, "string": "string_field", "array": ["first", "second", "third"], "obj": {"name": "hello I\'m object"}}}'
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_post_object_with_full_body:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 POST /objects
+___________________________________________________________________ TestObjects.test_post_object_send_invalid_json ____________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E88736DD0>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_post_object_send_invalid_json>>
+
+    def test_post_object_send_invalid_json(self, client, request):
+        """
+        попытка записать в базу невалидный json,
+        POST /objects
+        """
+        # отправляем запрос на запись объекта в базу с невалидным json в теле
+        response = post_object(client, content='{"name",}', headers={"Content-Type": "application/json"})
+
+        # убеждаемся, что сервер дал BAD REQUEST ответ
+>       assert_status_code(response, HTTPStatus.BAD_REQUEST)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:135:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.BAD_REQUEST: 400>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 400
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects
+E               method: POST
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1', 'content-type': 'application/json', 'content-length': '9'}
+E               query params:
+E               body: b'{"name",}'
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/ssertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_post_object_send_invalid_json:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 POST /objects
+_____________________________________________________________________ TestObjects.test_put_object_with_empty_body _____________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E88736A90>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_put_object_with_empty_body>>
+
+    def test_put_object_with_empty_body(self, client, request):
+        """
+        обновление объекта в базе на пустой объект,
+        PUT /objects/{id}
+        """
+        # записываем объект в базу со всеми заполненными полями
+        post_obj = read_json_common_request_data("valid_post_object")
+        response = post_object(client, json=post_obj)
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:146:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects
+E               method: POST
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1', 'content-length': '180', 'content-type': 'application/json'}
+E               query params:
+E               body: b'{"name": "string_name", "data": {"bool": true, "int": 2019, "float": 2049.99, "string": "string_field", "array": ["first", "second", "third"], "obj": {"name": "hello I\'m object"}}}'
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_put_object_with_empty_body:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 POST /objects
+_____________________________________________________________________ TestObjects.test_put_object_with_full_body ______________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E88735E90>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_put_object_with_full_body>>
+
+    def test_put_object_with_full_body(self, client, request):
+        """
+        обновление всех полей объекта в базе,
+        PUT /objects/{id}
+        """
+        # записываем объект в базу со всеми заполненными полями
+        post_obj = read_json_common_request_data("valid_post_object")
+        response = post_object(client, json=post_obj)
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:165:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects
+E               method: POST
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1', 'content-length': '180', 'content-type': 'application/json'}
+E               query params:
+E               body: b'{"name": "string_name", "data": {"bool": true, "int": 2019, "float": 2049.99, "string": "string_field", "array": ["first", "second", "third"], "obj": {"name": "hello I\'m object"}}}'
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_put_object_with_full_body:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 POST /objects
+____________________________________________________________________ TestObjects.test_put_object_send_invalid_json ____________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E88735790>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_put_object_send_invalid_json>>
+
+    def test_put_object_send_invalid_json(self, client, request):
+        """
+        попытка обновить объект, отправив невалидный json,
+        PUT /objects/{id}
+        """
+        # записываем объект в базу со всеми заполненными полями
+        response = post_object(client, json=read_json_common_request_data("valid_post_object"))
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:185:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects
+E               method: POST
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1', 'content-length': '180', 'content-type': 'application/json'}
+E               query params:
+E               body: b'{"name": "string_name", "data": {"bool": true, "int": 2019, "float": 2049.99, "string": "string_field", "array": ["first", "second", "third"], "obj": {"name": "hello I\'m object"}}}'
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_put_object_send_invalid_json:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 POST /objects
+__________________________________________________________________ TestObjects.test_put_object_update_non_exist_obj ___________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E89843ED0>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_put_object_update_non_exist_obj>>
+
+    def test_put_object_update_non_exist_obj(self, client, request):
+        """
+        попытка обновить несуществующий объект,
+        PUT /objects/{id}
+        """
+        # пытаемся обновить несуществующие объект
+        obj_id = "ff8081818a194cb8018a79e7545545ac"
+        response = put_object(client, obj_id, json={})
+
+        # убеждаемся, что сервер дал NOT FOUND ответ
+        assert_status_code(response, HTTPStatus.NOT_FOUND)
+>       assert_not_found(request, response, obj_id)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:206:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:207: in assert_not_found
+    assert_response_body_fields(request, response, exp_obj=exp)
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/ssertions/assertion_base.py:162: in assert_response_body_fields
+    assert_left_in_right_json(response, exp_json, act_json)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>
+exp_json = {'error': "The Object with id = ff8081818a194cb8018a79e7545545ac doesn't exist. Please provide an object id which exists or generate a new Object using POST request and capture the id of it to use it as part of PUT request after that."}
+actual_json = {'documentation_url': 'https://docs.github.com/rest', 'message': 'Not Found'}
+
+    def assert_left_in_right_json(response, exp_json, actual_json):
+        """
+        проверяет, что все значения полей exp_json равны значениям полей в actual_json
+        :param response: полученный ответ от сервера
+        :param exp_json: ожидаемый эталонный json
+        :param actual_json: полученый json
+        :raises AssertionError: если в exp_json есть поля со значениями, которые отличаются или которых нет в actual_json
+        """
+        root = 'root:' if isinstance(actual_json, list) else ''
+        compare_res = compare_json_left_in_right(exp_json, actual_json, key=root, path=root)
+>       assert not compare_res, BodyLogMsg(response) \
+            .add_compare_result(compare_res) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В ТЕЛЕ ОТВЕТА в json следующие поля не совпали с эталоном:
+E       ключ: error
+E                       expected: The Object with id = ff8081818a194cb8018a79e7545545ac doesn't exist. Please provide an object id which exists or generate a new Object using POST request and capture the id of it to use it as part of PUT request after that.
+E                       actual: key undefined
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects/ff8081818a194cb8018a79e7545545ac
+E               method: PUT
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1', 'content-length': '2', 'content-type': 'application/json'}
+E               query params:
+E               body: b'{}'
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:145: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_put_object_update_non_exist_obj:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 PUT /objects/ff8081818a194cb8018a79e7545545ac
+________________________________________________________________________ TestObjects.test_delete_exist_object _________________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E89820950>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_delete_exist_object>>
+
+    def test_delete_exist_object(self, client, request):
+        """
+        удаление сущестующего объекта,
+        DELETE /objects/{id}
+        """
+        # записываем объект в базу со всеми заполненными полями
+        response = post_object(client, json=read_json_common_request_data("valid_post_object"))
+>       assert_status_code(response, HTTPStatus.OK)
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/tests/test_objects.py:215:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, expected_code = <HTTPStatus.OK: 200>
+
+    def assert_status_code(response, expected_code):
+        """
+        сравнивает код ответа от сервера с ожидаемым
+        :param response: полученный от сервера ответ
+        :param expected_code: ожидаемый код ответа
+        :raises AssertionError: если значения не совпали
+        """
+>       assert expected_code == response.status_code, CodeLogMsg(response) \
+            .add_compare_result(expected_code, response.status_code) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В КОДЕ ОТВЕТА
+E               ожидался код: 200
+E               полученный код: 404
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects
+E               method: POST
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1', 'content-length': '180', 'content-type': 'application/json'}
+E               query params:
+E               body: b'{"name": "string_name", "data": {"bool": true, "int": 2019, "float": 2049.99, "string": "string_field", "array": ["first", "second", "third"], "obj": {"name": "hello I\'m object"}}}'
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:113: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_delete_exist_object:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 POST /objects
+______________________________________________________________________ TestObjects.test_delete_not_exist_object _______________________________________________________________________
+
+self = <test_objects.TestObjects object at 0x0000019E89821310>, client = <api.api_client.ApiClient object at 0x0000019E85E3BB10>
+request = <FixtureRequest for <Function test_delete_not_exist_object>>
+
+    def test_delete_not_exist_object(self, client, request):
+        """
+        удаление несущестующего объекта,
+        DELETE /objects/{id}
+        """
+        # пытаемся удалить несуществующий объект
+        obj_id = "ff8081818a194cb8018a79e7545545ac"
+        response = delete_object(client, obj_id)
+
+        # убеждаемся, что сервер дал NOT FOUND ответ
+        assert_status_code(response, HTTPStatus.NOT_FOUND)
+>       assert_not_exist(request, response, obj_id)
+
+C:\Users\invet\Downloads\master_API_testing\master_API_testing\API_testing-master\tests\test_objects.py:236:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:219: in assert_not_exist
+    assert_response_body_fields(request, response, exp_obj=exp, rmv_ids=False)
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:162: in assert_response_body_fields
+    assert_left_in_right_json(response, exp_json, act_json)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [404 Not Found]>, exp_json = {'error': "Object with id = ff8081818a194cb8018a79e7545545ac doesn't exist."}
+actual_json = {'documentation_url': 'https://docs.github.com/rest', 'message': 'Not Found'}
+
+    def assert_left_in_right_json(response, exp_json, actual_json):
+        """
+        проверяет, что все значения полей exp_json равны значениям полей в actual_json
+        :param response: полученный ответ от сервера
+        :param exp_json: ожидаемый эталонный json
+        :param actual_json: полученый json
+        :raises AssertionError: если в exp_json есть поля со значениями, которые отличаются или которых нет в actual_json
+        """
+        root = 'root:' if isinstance(actual_json, list) else ''
+        compare_res = compare_json_left_in_right(exp_json, actual_json, key=root, path=root)
+>       assert not compare_res, BodyLogMsg(response) \
+            .add_compare_result(compare_res) \
+            .add_request_url() \
+            .add_response_info() \
+            .get_message()
+E       AssertionError: В ТЕЛЕ ОТВЕТА в json следующие поля не совпали с эталоном:
+E       ключ: error
+E                       expected: Object with id = ff8081818a194cb8018a79e7545545ac doesn't exist.
+E                       actual: key undefined
+E       Содержимое отправляемого запроса (url, query params, тело):
+E               URL: https://api.github.com/objects/ff8081818a194cb8018a79e7545545ac
+E               method: DELETE
+E               headers: {'host': 'api.github.com', 'accept': '*/*', 'accept-encoding': 'gzip, deflate', 'connection': 'keep-alive', 'user-agent': 'python-httpx/0.24.1'}
+E               query params:
+E               body:
+E       Тело ответа:
+E               b'{"message":"Not Found","documentation_url":"https://docs.github.com/rest"}'
+
+/home/lizik/master_API_testing/master_API_testing/API_testing-master/assertions/assertion_base.py:145: AssertionError
+--------------------------------------------------------------------------------- Captured log setup ----------------------------------------------------------------------------------
+INFO     custom_loger:conftest.py:30 test_delete_not_exist_object:
+---------------------------------------------------------------------------------- Captured log call ----------------------------------------------------------------------------------
+INFO     custom_loger:api_client.py:25 DELETE /objects/ff8081818a194cb8018a79e7545545ac
+=============================================================================== short test summary info ===============================================================================
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_objects - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_objects_id_param[param0] - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_objects_id_param[param1] - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_objects_not_exist_id - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_objects_invalid_id - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_object - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_get_object_not_exist - AssertionError: В ТЕЛЕ ОТВЕТА в json следующие поля не совпали с эталоном:
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_post_object_empty_body - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_post_object_with_full_body - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_post_object_send_invalid_json - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_put_object_with_empty_body - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_put_object_with_full_body - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_put_object_send_invalid_json - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_put_object_update_non_exist_obj - AssertionError: В ТЕЛЕ ОТВЕТА в json следующие поля не совпали с эталоном:
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_delete_exist_object - AssertionError: В КОДЕ ОТВЕТА
+FAILED API_testing-master/tests/test_objects.py::TestObjects::test_delete_not_exist_object - AssertionError: В ТЕЛЕ ОТВЕТА в json следующие поля не совпали с эталоном:
+================================================================================= 16 failed in 3.84s ================================================================================== 
