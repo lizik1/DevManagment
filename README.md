@@ -1,7 +1,7 @@
 lab1
 ![изображение](https://github.com/lizik1/DevManagment/assets/95589734/c01aabf7-1bf4-40c3-b399-cd375d8fcdd4)
 
-lab2 
+lab3
 
 ссылка на репозиторий проекта https://github.com/den-corp 
 
